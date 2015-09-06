@@ -22,13 +22,11 @@ struct _wordnode {
 };
 typedef struct _wordnode wordnode;
 
-
-
 /*
  * Be happy you didn't have to write this function.
  * Prints a low-tech ASCII gallows.  Max number of misses
  * is 7 (i.e., if there are 7 misses, the player loses and
- * the poor sap gets hung).  
+ * the poor sap gets hung).
  */
 void print_gallows(int num_missed) {
     // make sure that we got called in a reasonable way
@@ -80,11 +78,19 @@ void print_gallows(int num_missed) {
  * and false otherwise.
  */
 bool one_game(const char *word) {
+    bool result = 0;
     print_gallows(6);
+    char status = char[strlen(word)];
+    for(int i = 0; i < strlen(status); i++)
+	status[i] = '_';
+    while(result == 0){
+	printf("Please guess a character:");
+	char guess = stdin();
+    }
     return false;
 }
 
-/* 
+/*
  * wordbank-related functions. please don't change the
  * function prototypes for these three functions.
  */
