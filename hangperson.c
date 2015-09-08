@@ -79,13 +79,24 @@ void print_gallows(int num_missed) {
  */
 bool one_game(const char *word) {
     bool result = 0;
-    print_gallows(6);
-    char status = char[strlen(word)];
-    for(int i = 0; i < strlen(status); i++)
-	status[i] = '_';
+    int num_missed = 0;
+    print_gallows(num_missed);
+    char *status = malloc(sizeof(char[strlen(word)]));
+    for(int i = 0; i < strlen(status); i++){
+    	status[i] = '_'; }
     while(result == 0){
-	printf("Please guess a character:");
-	char guess = stdin();
+		printf("Please guess a character:");
+		char guess = toupper(fgetc(stdin));
+	    bool in = false;
+	    for(int j = 0; j < strlen(status); j++){
+	    	if(word[j] == guess){
+	    		status[j] = guess;
+	    	}
+	    }
+	    if(!in){
+	    	num_missed++;
+	    }
+	    print_gallows(num_missed);
     }
     return false;
 }
@@ -117,10 +128,12 @@ wordnode *load_words(const char *filename, int *num_words) {
             }
             (*line).word[i] = toupper((*line).word[i]);
         }
+        printf("num_words = %d '\n'",*num_words);
         (*line).word[i] = '\0';
         (*line).next = tmp;
         (*line) = *tmp;
     }
+    printf("testing");
     fclose(file);
     return (*head).next;
 }
@@ -139,12 +152,12 @@ void free_words(wordnode *wordlist) {
 const char *choose_random_word(wordnode *wordlist, int num_words) {
     int r = random() % num_words;
     int i = 0;
-    wordnode node = *wordlist;
+    wordnode *node = wordlist;
     while(i < r){
-        node = *node.next;
+        node = (*node).next;
         i++;
     }
-    return node.word;
+    return (*node).word;
 }
 
 
@@ -162,7 +175,7 @@ int main() {
         printf("Didn't load any words?!\n");
         return 0;
     }
-    char *word = choose_random_word(words, num_words);
+    const char *word = choose_random_word(words, num_words);
     one_game(word);
     free_words(words);
     return 0;
