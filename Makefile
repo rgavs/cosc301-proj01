@@ -1,7 +1,7 @@
 .PHONY: clean
 
 CC=clang
-CFLAGS=-std=c99 -Wall -g 
+CFLAGS=-std=c99 -Wall -g
 OBJS=hangperson.o
 TARGET=hangperson
 
