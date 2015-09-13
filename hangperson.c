@@ -112,7 +112,7 @@ bool one_game(const char *word) {
  * wordbank-related functions. please don't change the
  * function prototypes for these three functions.
  */
-wordnode *load_words(const char *filename, unsigned int *num_words) {
+wordnode *load_words(const char *filename, int *num_words) {
     FILE* file = fopen(filename, "r");
     wordnode *head = malloc(sizeof(wordnode));
     //wordnode *prev = malloc(sizeof(wordnode));
@@ -134,19 +134,19 @@ wordnode *load_words(const char *filename, unsigned int *num_words) {
             }*/
             if(!isalpha((*line).word[i])){
                 (*num_words)--;
-                (*prev).next = tmp;
+                line->next = tmp;
                 break;
             }
-            (*line).word[i] = toupper((*line).word[i]);
+            line->word[i] = toupper((*line).word[i]);
         }
-        (*line).word[i] = '\0';
-        (*line).next = tmp;
+        line->word[i] = '\0';
+        line->next = tmp;
         (*line) = *tmp;
     }
     free(line);
     //free(prev);
     fclose(file);
-    return (*head).next;
+    return head->next;
 }
 
 void free_words(wordnode *wordlist) {
@@ -160,10 +160,10 @@ void free_words(wordnode *wordlist) {
     free(&node);
 }
 
-const char *choose_random_word(wordnode *wordlist, unsigned int num_words) {
-    unsigned int r = random() % num_words;
+const char *choose_random_word(wordnode *wordlist, int num_words) {
+    int r = random() % num_words;
     printf("r = %d, and num_words = %d\n",r, num_words );
-    unsigned int i = 0;
+    int i = 0;
     wordnode *node = (*wordlist).next;
     while(i < r){
     	printf("node.word = %s",(*node).word);
@@ -183,7 +183,7 @@ const char *choose_random_word(wordnode *wordlist, unsigned int num_words) {
 #ifndef AUTOTEST
 int main() {
     srandom(time(NULL));
-    unsigned int num_words = 0;
+    int num_words = 0;
     wordnode *words = load_words("/usr/share/dict/words", &num_words);
     if (num_words == 0) {
         printf("Didn't load any words?!\n");

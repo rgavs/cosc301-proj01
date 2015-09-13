@@ -122,7 +122,7 @@ wordnode *load_words(const char *filename, int *num_words) {
     FILE* file = fopen(filename,"r");
     wordnode * line = malloc(sizeof(wordnode *));
     wordnode * head = malloc(sizeof(wordnode *));
-    (*head).next = line;
+    head->next = line;
     while(!feof(file)){
         fgets(str,sizeof(str), file);
         str = strtok(str," /t/n");
@@ -132,13 +132,13 @@ wordnode *load_words(const char *filename, int *num_words) {
                 break;
             if(i == strlen(str) - 1){
                 (*num_words)++;
-                strncpy((*line).word,str,sizeof((*line).word));
-                (*line).next = malloc(sizeof(wordnode *));
-                line = (*line).next;
+                strncpy(line->word,str,sizeof(line->word));
+                line->next = malloc(sizeof(wordnode *));
+                line = line->next;
             } // end if
         }// end for
     } // end while
-    (*line).next = NULL;
+    line->next = NULL;
     free(line);
     return head;
 }
@@ -149,9 +149,9 @@ wordnode *load_words(const char *filename, int *num_words) {
 void free_words(wordnode *wordlist) {
     wordnode * node = wordlist;
     wordnode * tmp = (*node).next;
-    while((*node).next != NULL){
+    while(node != NULL){
         free(node);
-        *node = *(*tmp).next;
+        *node = *tmp->next;
         *tmp = *node;
     }
 }
@@ -163,9 +163,9 @@ const char *choose_random_word(wordnode *wordlist, int num_words) {
     int x = random() % num_words;
     wordnode *tmp = wordlist;
     for(int i = 0;i < x; i++){
-        tmp = (*tmp).next;
+        tmp = tmp->next;
     }
-    return strdup((*tmp).word);
+    return strdup(tmp->word);
 }
 
 
@@ -176,7 +176,6 @@ const char *choose_random_word(wordnode *wordlist, int num_words) {
  */
 #ifndef AUTOTEST
 int main() {
-    printf("sizeof type int = %lu",sizeof(int));
     srandom(time(NULL));
     int num_words = 0;
     wordnode *words = load_words("/usr/share/dict/words", &num_words);
