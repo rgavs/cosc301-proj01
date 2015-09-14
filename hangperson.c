@@ -78,18 +78,18 @@ void print_gallows(int num_missed) {
  * and false otherwise.
  */
 bool one_game(const char *word) {
+    int j = (strlen(word)*2 + 1);
+    char * stat[j];
+    printf("str len of j is : %d and str len of stat is : %lu",j,strlen(stat));
     bool result = 0;
     int num_missed = 0;
-    printf("word length is %lu",strlen(word));
     char guessed[] = {1,2,3,4,5,6,7};
-    for(int i = 0; i < strlen(status); i++){
-    	status[i] = '_'; }
+    for(int i = 0; i < strlen(stat); i++){
+    	stat[i] = '_'; }
     while(result == 0){
 	    print_gallows(num_missed);
 	    printf("     ");
-		for(int i = 0; i < strlen(status); i++){
-			printf("%c ",status[i]);
-		}
+		printf("%s",stat);
 		printf("\n\nPlease guess a character:");
 		char guess[256];
 	    bool in = false;
@@ -99,9 +99,9 @@ bool one_game(const char *word) {
 			fgets(guess, 256, stdin);
 		}
 		char c = toupper(guess[0]);
-		for(int j = 0; j < strlen(status); j++){
+		for(int j = 0; j < strlen(stat); j++){
 	    	if(word[j] == c){
-	    		status[j] = c;
+	    		stat[j] = c;
 	    		in = true;
 	    	}
 		}
@@ -127,14 +127,17 @@ wordnode *load_words(const char *filename, int *num_words) {
     wordnode * head = malloc(sizeof(wordnode));
    	wordnode * line = malloc(sizeof(head));
     head->next = line;
-    strcpy(head->word,"!");
-    strcpy(line->word,"!");
+    //strcpy(head->word,"!");
+    //strcpy(line->word,"!");
     int i = 0;
     char str[256];
+    int longest = 0;
     while(!feof(file)){
     	i = 0;
     	fgets(str, sizeof(str), file);
     	strcpy(str,strtok(str," \n\t"));
+        if(strlen(str) > longest)
+        	longest = strlen(str);
         if(strlen(str) == 0)
         	break;
         for(; i < strlen(str); i++){
@@ -152,11 +155,11 @@ wordnode *load_words(const char *filename, int *num_words) {
 		        line->word[i] = '\0';
 		        line->next = malloc(sizeof(wordnode));
 		        line = line->next;
-		        strcpy(line->word,"!");
+		        //strcpy(line->word,"!");
         	}
-        }
-    }
-    line = NULL;
+        } // end of if
+    } // end of while
+   	line = NULL;
     free(line);
     fclose(file);
     return head;
@@ -202,7 +205,6 @@ int main() {
         printf("Didn't load any words?!\n");
         return 0;
     }
-    printf("first word is: \'%s\'\n",words->word);
     const char *word = choose_random_word(words, num_words);
     one_game(word);
     free_words(words);
