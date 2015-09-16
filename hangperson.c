@@ -78,30 +78,54 @@ void print_gallows(int num_missed) {
  * and false otherwise.
  */
 bool one_game(const char *word) {
+    int num_guesses = 0;
 	int num_missed = 0;
 	int left = (int) strlen(word);	// num chars left to guess
 	bool correct = false; 			// true if current guess is in word, else false
-    char stat[strlen(word) * 2];
-    stat[strlen(word) * 2] = '\0';
-    for(int i = 0; i < strlen(word)*2; i++){
+    char stat[left * 2];
+    stat[left * 2] = '\0';
+    for(int i = 0; i < left * 2; i++){
     	if(i % 2 == 0)
 	    	stat[i] = '_';
 	    else
 	    	stat[i] = ' ';
-    }
-    printf("word and len is %s %lu and stat len is %lu",word,strlen(word),strlen(stat));
-    char guessed[] = {1,2,3,4,5,6,7};
+    }	// loop initializes array, alternating chars for readability
+    char guessed[32] = {'\0'};
     while(num_missed < 7 && left > 0){
+        correct = false;
+        if(left < strlen(word) || num_missed > 0)
+			printf("\nYou have guessed: \'%s\'",guessed);
 	    print_gallows(num_missed);
-	    printf("     %s\n\nPlease guess a letter: ",stat);
-		char guess[256];
-		fgets(guess, 256, stdin);
-		printf("char guess[0] is : %c \n",guess[0]);
-		while(!isalpha(guess[0])){
-			printf("Please guess a letter: ");
-			fgets(guess, 256, stdin);
-		}
-		char c = toupper(guess[0]);
+		char guess[128] = {'!'};
+		char c = '!';
+	    printf("     %s\n\n",stat);
+		bool again = false;
+		do{ // char validation
+            while(!isalpha(c)){
+				printf("Please guess a letter: ");
+				fgets(guess, 128, stdin);
+				c = toupper(guess[0]);
+			}
+			for(int k = 0; k < num_guesses + 1; k++){
+                if(num_guesses == 0){
+                    guessed[num_guesses] = c;
+                    num_guesses++;
+                    break;
+                }
+                if(c == guessed[k]){
+					again = true;
+					printf("Please guess a letter you have not already guessed.\n");
+					printf("You have guessed: \'%s\'\n",guessed);
+					fgets(guess, 8, stdin);
+					c = toupper(guess[0]);
+				}
+                if(k == num_guesses && !again){
+                    guessed[num_guesses] = c;
+                    num_guesses++;
+                    break;
+                }
+			}
+		} while(again);
 		for(int x = 0; x < strlen(word); x++){
 	    	if(word[x] == c){
 	    		stat[x * 2] = c;
@@ -109,31 +133,26 @@ bool one_game(const char *word) {
 	    		left--;
 	    	}
 	    }
-	    if(!correct){
+	    if(!correct)
 	    	num_missed++;
-	    	for(int i = 0; i < 7; i++)
-	    		if(!isalpha(guessed[i]))
-	    			guessed[i] = guess[0];
-	    }
-	    printf("num_missed = %d \n",num_missed);
     }
     print_gallows(num_missed);
-	printf("     %s\n\n",stat);	
+	printf("     %s\n\n",stat);
     if(left == 0){
     	printf("Congratulations! You have won!\n\n");
     	return true;
     }
-    printf("Not a winner.");
+    printf("Not a winner. The word was: \'%s\'",word);
     return false;
 }
 
-/* 
+/*
  * wordbank-related functions. please don't change the
  * function prototypes for these three functions.
  * load_words takes the name of the file that should be
  * opened and words read from, and a pointer to an int
  * that should be indirectly modified to store the number
- * of words loaded from the file.  The function should 
+ * of words loaded from the file.  The function should
  * return the linked list of words.
  */
 wordnode *load_words(const char *filename, int *num_words) {
@@ -155,8 +174,7 @@ wordnode *load_words(const char *filename, int *num_words) {
 	        str[i] = toupper(str[i]);
         }
         if(i == strlen(str)){
-	    	//printf("str is : \'%s\'\t\t num_words is : %d\n",str,*num_words);
-        	(*num_words)++;
+	    	(*num_words)++;
         	if(*num_words == 1)
         		strcpy(head->word,str);
         	else{
@@ -193,7 +211,6 @@ const char *choose_random_word(wordnode *wordlist, int num_words) {
     	node = node->next;
         i++;
     }
-    printf("The word is: \'%s\'\n",node->word);
     return node->word;
 }
 
