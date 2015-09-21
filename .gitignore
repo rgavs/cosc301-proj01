@@ -1,0 +1,6 @@
+# Compiled #
+*.o
+a.out
+
+# Other files #
+core
