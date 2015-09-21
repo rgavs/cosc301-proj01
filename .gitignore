@@ -1,6 +1,8 @@
 # Compiled #
 *.o
 a.out
+hangperson
 
 # Other files #
 core
+beta.c
